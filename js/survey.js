@@ -1,4 +1,8 @@
 var questions = [
+   {   text: '<div>First of all, we would like to thank you for participating this experiment. We are carrying out non-profit research at a university to understand how people experience online videos.  In this experiment, we ask you to fill in a demographic questionnaire, then spend some time watching a video and afterwards answer some questions. <p>By accepting this Task, you agree that:</p><p>We may publish excerpts of your answers for scientific articles;<br>This experiment will record your interactions;<br>We will NOT publish any information that could be linked to you</p><p>Note on answer questions:</p><p>There are no absolute wrong or right answers for this task. What we ask is for you to give us your opinions related to the video that you watch.</p><p>Task duration and reward:<br>The whole experiment takes about 5 minutes, and you will get 0.3 USD after you finish the task successfully</p><p>Contact information:<br>You can always contact the requester for this Task at <a href="mailto:y.zhu-1@tudelft.nl">y.zhu-1@tudelft.nl</a>. Please make sure you include the title of the Task when sending an email to this address.<br></p><p></p><p></p><p></p><p></p><p></p></div><p><b>Please Type your Microworker ID here</b></p>', 
+    comment: '<p><b>If you would like to participant in this experiment, please click CONTINUE</b></p>',
+         id: '0', 
+       type: 'text-field-small'},
    {   text: 'How much wood could a woodchuck chuck if a woodchuck could chuck wood?', 
          id: '1', 
        type: 'single-select', 
@@ -34,51 +38,7 @@ var questions = [
   {   text: 'What goes around the world but stays in a corner?', 
          id: '9', 
        type: 'single-select', 
-    options: ["a stamp", "coffee", "a dog", "plants"]},
-  {   text: 'I have holes in my top and bottom, my left and right, and in the middle. But I still hold water. What am I?', 
-         id: '10', 
-       type: 'single-select', 
-    options: ["a turtle", "a toenail", "a sponge", "a towel"]},
-  {   text: 'Give me food, and I will live; give me water, and I will die. What am I?', 
-         id: '11', 
-       type: 'single-select', 
-    options: ["a cold", "fire", "couch", "a microwave"]},
-  {   text: 'The man who invented it doesn\'t want it. The man who bought it doesn\'t need it. The man who needs it doesn\'t know it. What is it?', 
-         id: '12', 
-       type: 'single-select', 
-    options: ["a pillow", "a coffee grinder", "a coffin", "a computer"]},
-  {   text: 'I run over fields and woods all day. Under the bed at night I sit not alone. My tongue hangs out, up and to the rear, awaiting to be filled in the morning. What am I?', 
-         id: '13', 
-       type: 'single-select', 
-    options: ["a shoe", "a dog", "a nail", "a wallet"]},
-  {   text: 'Throw it off the highest building, and I\'ll not break. But put me in the ocean, and I will. What am I?', 
-         id: '14', 
-       type: 'single-select', 
-    options: ["a penny", "a car", "a shell", "a tissue"]},
-  {   text: 'What can run but never walks, has a mouth but never talks, has a head but never weeps, has a bed but never sleeps?', 
-         id: '15', 
-       type: 'single-select', 
-    options: ["a river", "a lake", "an ocean", "a car"]},
-  {   text: 'No sooner spoken than broken. What is it?', 
-         id: '16', 
-       type: 'single-select', 
-    options: ["silence", "onions", "paper", "cats"]},
-  {   text: 'A certain crime is punishable if attempted but not punishable if committed. What is it?', 
-         id: '17', 
-       type: 'single-select', 
-    options: ["smoking", "coup d'etat", "horseplaying", "swimming"]},
-  {   text: 'You use a knife to slice my head and weep beside me when I am dead. What am I?', 
-         id: '18', 
-       type: 'single-select', 
-    options: ["an onion", "toilet paper", "toenails", "an ottoman"]},
-  {   text: 'I\'m the part of the bird that\'s not in the sky. I can swim in the ocean and yet remain dry. What am I?', 
-         id: '19', 
-       type: 'single-select', 
-    options: ["a beak", "a foot", "a feather", "a shadow"]},
-  {   text: 'I am mother and father, but never birth or nurse. I\'m rarely still, but I never wander. What am I?', 
-         id: '20', 
-       type: 'single-select', 
-    options: ["headphones", "kittens", "a tree", "a hippy"]}
+    options: ["a stamp", "coffee", "a dog", "plants"]}
 ];
 
 var portionOfWindowSizeForQuestions = 0.9;
@@ -98,7 +58,7 @@ $(document).ready(function(){
   });
   
   $('#nextBtn').click(function() {
-    if ( $('#nextBtn').text().indexOf('Next') === 0 ) {
+    if ( $('#nextBtn').text().indexOf('Continue') === 0 ) {
       showNextQuestionSet();
     } else {
       // call submitting stuff here.  
@@ -118,16 +78,24 @@ function generateQuestionElement(question) {
   var questionElement = $('<div id="' + questionId + '" class="question"></div>');
   var questionTextElement = $('<legend class="question-text"></legend>');
   var questionAnswerElement = $('<div class="answer"></div>');
+  var questionCommentElement = $('<div class="comment"></div>');
   questionElement.appendTo($('.question-container'));
   questionElement.append(questionTextElement);
   questionElement.append(questionAnswerElement);
-  questionTextElement.text(question.text);
+  questionElement.append(questionCommentElement);
+  questionTextElement.html(question.text);
+  questionCommentElement.html(question.comment);
   if ( question.type === 'single-select' ) {
     questionElement.addClass('single-select');
     question.options.forEach(function(option) {
       questionAnswerElement.append(
         '<label class="radio"><input type="radio" value="' + option + '" name="' + questionId + '"/>' + option + '</label>');
     });
+  }
+  else if ( question.type === 'text-field-small' ) {
+    questionElement.addClass('text-field-small');
+    questionAnswerElement.append(
+      '<input type="text" value="" class="text-short" name="' + questionId + '">');
   }
   questionElement.hide();
 }
@@ -189,16 +157,16 @@ function showPreviousQuestionSet() {
 function doButtonStates() {
   
   if ( firstQuestionDisplayed == 1 ) {
-    $('#backBtn').addClass('disabled');  
-  } else if ( $('#backBtn' ).hasClass('disabled') ) {
-    $('#backBtn').removeClass('disabled');
+    $('#backBtn').addClass('invisible');  
+  } else if ( $('#backBtn' ).hasClass('invisible') ) {
+    $('#backBtn').removeClass('invisible');
   }
     
   if ( lastQuestionDisplayed == questions.length ) {
     $('#nextBtn').text('Finish');
     $('#nextBtn').addClass('blue');  
   } else if ( $('#nextBtn').text() === 'Finish' ) {
-    $('#nextBtn').text('Next »'); 
+    $('#nextBtn').text('Continue »'); 
     $('#nextBtn').removeClass('blue');
   }
 }

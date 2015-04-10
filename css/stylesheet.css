@@ -139,6 +139,7 @@ br {
 	padding: 0 8px;
 	text-decoration: none;
     margin-top: 15px;
+    margin-right: 15px;
 }
 
 .button:hover {
@@ -161,6 +162,10 @@ br {
 .button.disabled {
   color: #aaa;
   pointer-events: none;
+}
+
+.button.invisible {
+  display:none
 }
 
 .button.default:active {
