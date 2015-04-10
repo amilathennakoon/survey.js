@@ -108,9 +108,16 @@ br {
   background-color: rgb(255,255,255);
 }
 
-.text-short,.text-long {
+.text {
   border: 1px solid #bbb;
   padding: 0.4em 0.6em;
+}
+
+textarea {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	width: 100%;
 }
 
 .button {

@@ -3,10 +3,9 @@ var questions = [
     comment: '<p><b>If you would like to participant in this experiment, please click CONTINUE</b></p>',
          id: '0', 
        type: 'text-field-small'},
-   {   text: 'How much wood could a woodchuck chuck if a woodchuck could chuck wood?', 
+   {   text: '<div><p><h2>Instructions</h2>This experiment consists of five parts.</p><p>Part 1 Demographic questionnaire<br>In this part, you are requested to answer some questions related to your daily online video experience.</p><p>Part 2 Personality questionnaire<br>In this part, you are requested to answer some questions related to your personality. Please answer the questions honestly.</p><p>Part 3 Training<br>In this part, you will watch two sample videos. One video represents the highest possible quality you will get while another video represents the lowest possible quality you will get.</p><p>Part 4  Watching the test video<br>In this part, you will watch the actual test video. The video lasts around 1 minute. We require that you watch the entire video clip.</p><p>Part 5 Test questionnaire<br>After watching the test video, you are requested to fill in a questionnaire related to your experience. Please note that the experience we ask is only related to the test video you just watched.</p><p>After finishing the whole experiment, you will get a code. Please use this code to get your reward via Mircoworkers.</p><p><b>General feedback</b><br>If you encounter any problems with this task or have any other comments, please report them here. You can also use this textbox to tell us if you liked this Task or have any suggestions.</p></div>', 
          id: '1', 
-       type: 'single-select', 
-    options: ["37", "112", "42", "100"]},
+       type: 'text-field-large'},
   {   text: 'What has a face and two hands but no arms or legs?', 
          id: '2', 
        type: 'single-select', 
@@ -99,7 +98,12 @@ function generateQuestionElement(question) {
   else if ( question.type === 'text-field-small' ) {
     questionElement.addClass('text-field-small');
     questionAnswerElement.append(
-      '<input type="text" value="" class="text-short" name="' + questionId + '">');
+      '<input type="text" value="" class="text" name="' + questionId + '">');
+  }
+  else if ( question.type === 'text-field-large' ) {
+    questionElement.addClass('text-field-large');
+    questionAnswerElement.append(
+      '<textarea rows="8" cols="0" class="text" name="' + questionId + '">');
   }
   questionElement.hide();
 }
