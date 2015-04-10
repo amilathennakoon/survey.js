@@ -108,6 +108,15 @@ br {
   background-color: rgb(255,255,255);
 }
 
+.required-asterisk {
+  font-family: "Roboto";
+  color: rgb(196,59,29);
+  font-weight: 400;
+  font-size: 1.000rem;
+  font-style: normal;
+  color: #c43b1d;
+}
+
 .text {
   border: 1px solid #bbb;
   padding: 0.4em 0.6em;
@@ -117,7 +126,7 @@ textarea {
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
-	width: 100%;
+	width: 95%;
 }
 
 .button {
