@@ -45,6 +45,10 @@ var portionOfWindowSizeForQuestions = 0.9;
 var firstQuestionDisplayed = 0;
 var lastQuestionDisplayed = 0;
 
+window.onbeforeunload = function() {
+    return "This will reset all answers that you've already filled in!";
+}
+
 $(document).ready(function(){
    
   questions.forEach(function(question) {
