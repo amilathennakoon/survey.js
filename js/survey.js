@@ -12,6 +12,7 @@ var questions = [
   {        text: 'What has a face and two hands but no arms or legs?', 
              id: '2', 
     break_after: true,
+       required: true,
            type: 'single-select', 
         options: ["a clock", "a dog", "a couch", "a giraffe"]},
   {        text: 'What gets wetter and wetter the more it dries?', 
@@ -65,7 +66,15 @@ $(document).ready(function(){
   
   $('#nextBtn').click(function() {
     if ( $('#nextBtn').text().indexOf('Continue') === 0 ) {
-      showNextQuestionSet();
+      var ok = true;
+      for (i = firstQuestionDisplayed; i <= lastQuestionDisplayed; i++) {
+        if (questions[i]['required'] === true && !getQuestionAnswer(questions[i])) {
+          $('.question-container > div.question:nth-child(' + (i+1) + ') > .required-message').show();
+          ok = false;
+        }
+      }
+      if (ok)
+        showNextQuestionSet();
     } else {
       // call submitting stuff here.  
     }
@@ -76,6 +85,21 @@ $(document).ready(function(){
      
 });
 
+
+function getQuestionAnswer(question) {
+  var questionId = "q_" + question.id;
+  var result;
+  if ( question.type === 'single-select' ) {
+    result = $('input[type="radio"][name="' + questionId + '"]:checked').val();
+  }
+  else if ( question.type === 'text-field-small' ) {
+    result = $('input[name=' + questionId + ']').val();
+  }
+  else if ( question.type === 'text-field-large' ) {
+    result = $('textarea[name=' + questionId + ']').val();
+  }
+  return result;
+}
 
 
 function generateQuestionElement(question) {
@@ -110,12 +134,16 @@ function generateQuestionElement(question) {
   }
   if ( question.required === true )
       questionAnswerElement.append('<span class="required-asterisk" aria-hidden="true">*</span>');
+      questionAnswerElement.after('<div class="required-message">This is a required question</div>');
   questionElement.hide();
 }
 
 
 function hideAllQuestions() {
   $('.question:visible').each(function(index, element){
+    $(element).hide();
+  });
+  $('.required-message').each(function(index, element){
     $(element).hide();
   });
 }

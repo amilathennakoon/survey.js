@@ -108,7 +108,7 @@ br {
   background-color: rgb(255,255,255);
 }
 
-.required-asterisk {
+.required-asterisk, .required-message {
   font-family: "Roboto";
   color: rgb(196,59,29);
   font-weight: 400;
