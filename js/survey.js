@@ -186,7 +186,16 @@ $(document).ready(function(){
       for (i = 0; i < questions.length; i++) {
         answers["q_" + questions[i].id] = getQuestionAnswer(questions[i]);
       }
-      alert(JSON.stringify(answers));
+
+      $.ajax({type: 'post',
+              url: 'http://localhost:8000',
+              contentType: "application/json",
+              data: JSON.stringify(answers),
+              processData: false,
+              success: function(data){
+                alert(data);
+              }
+      });
     }
   });
   
