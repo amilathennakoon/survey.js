@@ -188,7 +188,7 @@ $(document).ready(function(){
       }
 
       $.ajax({type: 'post',
-              url: 'http://localhost:8000',
+              url: 'http://localhost:8000/session',
               contentType: "application/json",
               data: JSON.stringify(answers),
               processData: false,
