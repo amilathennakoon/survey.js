@@ -182,7 +182,7 @@ $(document).ready(function(){
         showNextQuestionSet();
     }
     else {
-      var answers = {};
+      var answers = {res: $(window).width() + "x" + $(window).height()};
       for (i = 0; i < questions.length; i++) {
         answers["q_" + questions[i].id] = getQuestionAnswer(questions[i]);
       }
