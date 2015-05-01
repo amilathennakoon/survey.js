@@ -1,0 +1,39 @@
+<html>
+<head>
+<link href="css/projekktor/stylesheet.css" type="text/css" rel="stylesheet">
+<script src='js/jquery.js'></script>
+<script src="js/projekktor-1.3.09.min.js"></script>
+</head>
+    <body bgcolor="#000">
+        <div id="player_a" class="projekktor">
+            <div style="color: #fff;" id="buffered">Buffered <span id="progress"></span></div>
+            <noscript><p>No JavaScript support.</p></noscript>
+        </div>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                var r = new XMLHttpRequest();
+                r.onprogress = function(evt) {
+                    $('#progress').text((evt.loaded / evt.total)*100);
+                };
+                
+                r.onload = function() {
+                    $('#buffered').hide(); 
+                    var url = URL.createObjectURL(r.response);
+                    projekktor('#player_a', {
+                        controls: true,
+                        poster: 'img/intro.png',
+                        playerFlashMP4: 'swf/StrobeMediaPlayback/StrobeMediaPlayback.swf',
+                        playerFlashMP3: 'swf/StrobeMediaPlayback/StrobeMediaPlayback.swf',
+					    iframe: true,
+					    forceFullViewport: true,
+                        playlist: [{0: {src: url, type: "video/mp4"}}]    
+                        }, function(player) {} // on ready 
+                    );
+                };
+                r.open("GET", "http://localhost:7000/big_buck_bunny.mp4");
+                r.responseType = "blob";
+                r.send();
+            });
+        </script>
+    </body>
+</html>
