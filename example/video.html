@@ -6,18 +6,23 @@
 </head>
     <body bgcolor="#000">
         <div id="player_a" class="projekktor">
-            <div style="color: #fff;" id="buffered">Buffered <span id="progress"></span></div>
-            <noscript><p>No JavaScript support.</p></noscript>
+            <div id="message">Loading video..</div>
+            <div id="progressbar"><div></div></div>
         </div>
-        <script type="text/javascript">
+ 
+
+       <script type="text/javascript">
             $(document).ready(function() {
                 var r = new XMLHttpRequest();
                 r.onprogress = function(evt) {
-                    $('#progress').text((evt.loaded / evt.total)*100);
+                    var progress = (evt.loaded / evt.total);
+                    var width = progress * $('#progressbar').width();
+                    $('#progressbar').find('div').width(width).html(Math.round(progress * 100) + "%&nbsp;");
                 };
                 
                 r.onload = function() {
-                    $('#buffered').hide(); 
+                    $('#message').hide();
+                    $('#progressbar').hide();
                     var url = URL.createObjectURL(r.response);
                     projekktor('#player_a', {
                         controls: true,
@@ -30,7 +35,7 @@
                         }, function(player) {} // on ready 
                     );
                 };
-                r.open("GET", "http://localhost:7000/big_buck_bunny.mp4");
+                r.open("GET", "http://www.st.ewi.tudelft.nl/~bouman/big_buck_bunny_480p_h264.mp4");
                 r.responseType = "blob";
                 r.send();
             });
