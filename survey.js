@@ -148,6 +148,7 @@ var questions = [
             type: 'text-field-large'}
 ];
 
+var timestamps = [];
 var firstQuestionDisplayed = -1;
 var lastQuestionDisplayed = -1;
 
@@ -178,11 +179,15 @@ $(document).ready(function(){
         if (!ok)
             return
 
+        now = new Date().getTime()
+
         if ( $('#nextBtn').text().indexOf('Continue') === 0 ) {
+            timestamps.push(now);
             showNextQuestionSet();
         }
         else {
-            var answers = {res: $(window).width() + "x" + $(window).height()};
+            var answers = {res: $(window).width() + "x" + $(window).height(),
+                           timestamps: timestamps.concat([now])};
             for (i = 0; i < questions.length; i++) {
                 answers["q_" + questions[i].id] = getQuestionAnswer(questions[i]);
             }
