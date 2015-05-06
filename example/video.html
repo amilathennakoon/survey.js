@@ -46,7 +46,7 @@
                         }, function(player) {} // on ready 
                     );
                 };
-                r.open("GET", getParameterByName("file"));
+                r.open("GET", getParameterByName("file") + "?date=" + (new Date().getTime()));
                 r.responseType = "blob";
                 r.send();
             });
