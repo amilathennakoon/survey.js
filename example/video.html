@@ -12,6 +12,13 @@
  
 
        <script type="text/javascript">
+            function getParameterByName(name) {
+                name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+                var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                    results = regex.exec(location.search);
+                return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+            }
+
             $(document).ready(function() {
                 var r = new XMLHttpRequest();
                 r.onprogress = function(evt) {
@@ -21,6 +28,10 @@
                 };
                 
                 r.onload = function() {
+                    if (this.readyState != 4 || this.status != 200) {
+                        $('#message').text("Could not load video");
+                        return;
+                    }
                     $('#message').hide();
                     $('#progressbar').hide();
                     var url = URL.createObjectURL(r.response);
@@ -35,7 +46,7 @@
                         }, function(player) {} // on ready 
                     );
                 };
-                r.open("GET", "http://www.st.ewi.tudelft.nl/~bouman/big_buck_bunny_480p_h264.mp4");
+                r.open("GET", getParameterByName("file"));
                 r.responseType = "blob";
                 r.send();
             });
