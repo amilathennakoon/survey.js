@@ -109,7 +109,8 @@ var questions = [
     {       text: '<p><h2>The Training part is over. Please click continue to start the actual experiment</h2></p>', 
               id: '24', 
      break_after: true,
-            type: 'text-field-small'},
+            type: 'single-select',
+         options: []},
     {       text: '<div><p><h2>Part 4 Watching the test video</h2><br>After watching the whole video, please click continue to enter the last part. Please note you are requested to finish watching the entire video.</p><p><iframe class="video" src="http://youtube.com/embed/R02hkumR8gw" style="width: 760px; height: 573px;"></iframe></p><p><b>General feedback</b><br>If you encounter any problems with this task or have any other comments, please report them here. You can also use this textbox to tell us if you liked this Task or have any suggestions.</p></div>', 
               id: '25', 
      break_after: true,
@@ -192,8 +193,11 @@ $(document).ready(function(){
                     contentType: "application/json",
                     data: JSON.stringify(answers),
                     processData: false,
-                    success: function(data) {
-                        alert(data);
+                    success: function(response) {
+                        alert("Successfully send:"+JSON.stringify(answers));
+                    },
+                    error: function(response) {
+                        alert("Could not send:"+JSON.stringify(answers));
                     }
             });
         }
@@ -227,7 +231,7 @@ function generateQuestionElement(question) {
   
     var questionId = "q_" + question.id;
     var questionElement = $('<div id="' + questionId + '" class="question"></div>');
-    var questionTextElement = $('<legend class="question-text"></legend>');
+    var questionTextElement = $('<div class="question-text"></div>');
     var questionAnswerElement = $('<div class="answer"></div>');
     var questionCommentElement = $('<div class="comment"></div>');
     questionElement.appendTo($('.question-container'));
