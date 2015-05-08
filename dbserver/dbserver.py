@@ -17,7 +17,7 @@ class API(object):
         self.table = 'answers'
         # {name: required}
         self.fields = {'q_%d' % i: i not in [1, 8, 19, 20, 21, 22, 23, 25, 32] for i in range(33)}
-        self.fields['useragent'] = True
+        self.fields.update({'useragent': True, 'timestamps': True})
         self.videos = {'url1': 5, 'url2': 5}
         self.setup_database()
 
@@ -89,7 +89,7 @@ def main(argv):
                     'tools.response_headers.headers': [('Content-Type', 'text/plain')]}}
     cherrypy.config.update({'server.socket_host': '0.0.0.0',
                             'server.socket_port': int(args.port)})
-    cherrypy.quickstart(API(), '/session', config)
+    cherrypy.quickstart(API(), '/answers', config)
 
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 var questions = [
     {       text: '<div>First of all, we would like to thank you for participating this experiment. We are carrying out non-profit research at a university to understand how people experience online videos.  In this experiment, we ask you to fill in a demographic questionnaire, then spend some time watching a video and afterwards answer some questions. <p>By accepting this Task, you agree that:</p><p>We may publish excerpts of your answers for scientific articles;<br>This experiment will record your interactions;<br>We will NOT publish any information that could be linked to you</p><p>Note on answer questions:</p><p>There are no absolute wrong or right answers for this task. What we ask is for you to give us your opinions related to the video that you watch.</p><p>Task duration and reward:<br>The whole experiment takes about 5 minutes, and you will get 0.3 USD after you finish the task successfully</p><p>Contact information:<br>You can always contact the requester for this Task at <a href="mailto:y.zhu-1@tudelft.nl">y.zhu-1@tudelft.nl</a>. Please make sure you include the title of the Task when sending an email to this address.<br></p><p></p><p></p><p></p><p></p><p></p></div><p><b>Please Type your Microworker ID here</b></p>', 
          comment: '<p><b>If you would like to participant in this experiment, please click CONTINUE</b></p>',
-              id: 'q_0',
+              id: 'worker',
      break_after: true,
         required: true,
             type: 'text-field-small'},
@@ -90,11 +90,11 @@ var questions = [
      break_after: true,
             type: 'text-field-large'},
     {       text: '<div><p><h2>Part 3 Training</h2><br>In this Part you will watch TWO sample videos, The first video represents the highest possible video quality you will get, the second video represents the lowest possible video quality you will get. The second video will not be played until you finished the first video. After watching these two videos, there is one sample question to help you get familiar with our test questionnaire.</p><p><h2>Sample High Quality</h2><iframe id="player_a" src="video.html?file=big_buck_bunny_480p_h264.mp4" allowfullscreen frameborder="0" scrolling="no" width="620" height="385"></iframe></p><p><b>General feedback</b><br>If you encounter any problems with this task or have any other comments, please report them here. You can also use this textbox to tell us if you liked this Task or have any suggestions.</p></div>', 
-              id: 'q_20', 
+              id: 'q_20',
      break_after: true,
             type: 'text-field-large'},
     {       text: '<div><p><h2>Part 3 Training</h2><br>In this Part you will watch TWO sample videos, The first video represents the highest possible video quality you will get, the second video represents the lowest possible video quality you will get. The second video will not be played until you finished the first video. After watching these two videos, there is one sample question to help you get familiar with our test questionnaire.</p><p><h2>Sample Low Quality</h2><iframe id="player_b" src="video.html?file=big_buck_bunny_480p_h264.mp4" allowfullscreen frameborder="0" scrolling="no" width="620" height="385"></iframe></p><p><b>General feedback</b><br>If you encounter any problems with this task or have any other comments, please report them here. You can also use this textbox to tell us if you liked this Task or have any suggestions.</p></div>',
-              id: 'q_21', 
+              id: 'q_21',
      break_after: true,
             type: 'text-field-large'},
    {        text: '<div><p><h2>Part 3 Training</h2><br>In this Part you will watch TWO sample videos, The first video represents the highest possible video quality you will get, the second video represents the lowest possible video quality you will get. The second video will not be played until you finished the first video. After watching these two videos, there is one sample question to help you get familiar with our test questionnaire.</p><p><h2>Sample question</h2></p><p><b>The video clip was enjoyable</b></p></div>', 
@@ -112,7 +112,7 @@ var questions = [
             type: 'single-select',
          options: []},
     {       text: '<div><p><h2>Part 4 Watching the test video</h2><br>After watching the whole video, please click continue to enter the last part. Please note you are requested to finish watching the entire video.</p><p><iframe id="player_c" src="video.html?file=big_buck_bunny_480p_h264.mp4" allowfullscreen frameborder="0" scrolling="no" width="620" height="385"></iframe></p><p><b>General feedback</b><br>If you encounter any problems with this task or have any other comments, please report them here. You can also use this textbox to tell us if you liked this Task or have any suggestions.</p></div>', 
-              id: 'q_25', 
+              id: 'q_25',
      break_after: true,
             type: 'text-field-large'},
    {        text: '<div><p><h2>Part 5 Video Experience Questionnaire</h2><br>In this part, you will be asked to fill in several questions related to your visual experience. Note that the experience we asked is ONLY refer to the video you just watched. Please answer all questions honestly.</p><p><b>The video clip was enjoyable</b></p></div>', 
@@ -162,6 +162,7 @@ $(document).ready(function(){
     questions.forEach(function(question) {
         generateQuestionElement( question );
     });
+    $('input[name="worker"]').val(getParameterByName("worker"));
   
     $('#backBtn').click(function() {
         if ( !$('#backBtn').hasClass('disabled') ) {
@@ -188,13 +189,14 @@ $(document).ready(function(){
         }
         else {
             var answers = {res: $(window).width() + "x" + $(window).height(),
-                           timestamps: timestamps.concat([now])};
+                           timestamps: timestamps.concat([now]),
+                           campaign: getParameterByName("campaign")};
             for (i = 0; i < questions.length; i++) {
                 answers[questions[i].id] = getQuestionAnswer(questions[i]);
             }
 
             $.ajax({type: 'post',
-                    url: 'http://localhost:8000/session',
+                    url: 'http://localhost:7000/answers',
                     contentType: "application/json",
                     data: JSON.stringify(answers),
                     processData: false,
@@ -211,6 +213,14 @@ $(document).ready(function(){
     showNextQuestionSet();
      
 });
+
+
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
 
 
 function getQuestionAnswer(question) {
