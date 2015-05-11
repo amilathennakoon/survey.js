@@ -132,6 +132,14 @@ br {
   color: #c43b1d;
 }
 
+.required-message {
+  margin-top: 5px;
+}
+
+.required-asterisk {
+  margin-left: 5px;
+}
+
 .text {
   border: 1px solid #bbb;
   padding: 0.4em 0.6em;

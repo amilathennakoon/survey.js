@@ -165,8 +165,10 @@ function generateQuestionElement(question) {
         questionElement.addClass('text-field-large');
         questionAnswerElement.append('<textarea rows="8" cols="0" class="text" name="' + question.id + '">');
     }
-    if ( question.required === true )
-        questionAnswerElement.append('<span class="required-asterisk" aria-hidden="true">*</span>');
+    if ( question.required === true ) {
+        var last = questionTextElement.find(':last');
+        (last.length ? last : questionTextElement).append('<span class="required-asterisk" aria-hidden="true">*</span>');
+    }
     questionAnswerElement.after('<div class="required-message">This is a required question</div>');
     questionElement.hide();
 }
