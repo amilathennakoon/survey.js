@@ -9,16 +9,15 @@ import cherrypy
 
 class API(object):
 
-    exposed = True
     DATABASE = 'answers.db'
     SECRET = 'microworkers_secret_key'
 
     def __init__(self):
         self.table = 'answers'
         # {name: required}
-        self.fields = {'q_%d' % i: i not in [1, 8, 19, 20, 21, 22, 23, 25, 32] for i in range(33)}
-        self.fields.update({'useragent': True, 'timestamps': True})
-        self.videos = {'url1': 5, 'url2': 5}
+        self.fields = {'q_%d' % i: i not in [1, 8, 19, 20, 21, 22, 23, 24, 31] for i in range(1, 32)}
+        self.fields.update({'useragent': False, 'timestamps': True, 'worker': True, 'campaign': True, 'res': True, 'video': True})
+        self.videos = {'big_buck_bunny_480p_h264.mp4': 2, 'BigBuckBunny_320x180.mp4': 2}
         self.setup_database()
 
     def setup_database(self):
@@ -26,43 +25,58 @@ class API(object):
             sql = 'CREATE TABLE IF NOT EXISTS %s (%s)' % (self.table, ', '.join(self.fields))
             con.execute(sql)
 
-    def GET(self, worker=None, campaign=None):
-        if worker and campaign:
-            choices = [k for k, v in self.videos.iteritems() if v > 0]
-            if choices:
-                video_url = random.choice(choices)
-                self.videos[video_url] -= 1
+            sql = 'SELECT video, count(video) FROM %s GROUP BY video' % self.table
+            cur = con.execute(sql)
+            for video, count in cur.fetchall():
+                if video in self.videos:
+                    self.videos[video] -= count
+            print self.videos
 
-                cherrypy.session['worker'] = worker
-                cherrypy.session['campaign'] = campaign
-                cherrypy.session['video'] = video_url
+    @cherrypy.expose
+    def video(self):
+        choices = [k for k, v in self.videos.iteritems() if v > 0]
+        if choices:
+            video_url = random.choice(choices)
+            return video_url
 
-                return video_url
-
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
     @cherrypy.tools.json_in()
-    def POST(self):
+    def answers(self):
+        if cherrypy.request.method == 'OPTIONS':
+            cherrypy.response.headers['Connection'] = 'keep-alive'
+            cherrypy.response.headers['Access-Control-Max-Age'] = '1440'
+            cherrypy.response.headers['Access-Control-Allow-Headers'] = 'X-Auth-Token,Content-Type,Accept'
+            return {}
+
         data = cherrypy.request.json
-        print 'POST', data
+        print 'Received POST with data:', data
 
-        if 'worker' in cherrypy.session and 'campaign' in cherrypy.session:
-            with sqlite3.connect(API.DATABASE) as con:
-                keys, values = zip(*data.iteritems())
-                keys += ('useragent',)
-                values += (cherrypy.request.headers.get('User-Agent', None),)
-                sql = 'INSERT INTO ' + self.table + '(' + ','.join(keys) + ') VALUES(' + ','.join(['?'] * len(keys)) + ')'
-                cur = con.execute(sql, values)
-                con.commit()
+        missing_keys = sorted([name for name, required in self.fields.iteritems() if required and name not in data])
+        if missing_keys:
+            print 'Missing required keys:', ', '.join(missing_keys)
+            return
 
-                # Generate and return Micoworkers VCODE
-                sha = hashlib.sha256()
-                sha.update(cherrypy.session['worker'] + cherrypy.session['campaign'] + API.SECRET)
-                return 'mw-' + sha.digest().encode('hex')
+        if data['video'] not in self.videos:
+            print 'Unknown video:', data['video']
+            return
 
-    def OPTIONS(self):
-        cherrypy.response.headers['Connection'] = 'keep-alive'
-        cherrypy.response.headers['Access-Control-Max-Age'] = '1440'
-        cherrypy.response.headers['Access-Control-Allow-Headers'] = 'X-Auth-Token,Content-Type,Accept'
-        return {}
+        data['timestamps'] = ','.join([str(ts) for ts in data['timestamps']])
+
+        with sqlite3.connect(API.DATABASE) as con:
+            keys, values = zip(*data.iteritems())
+            keys += ('useragent',)
+            values += (cherrypy.request.headers.get('User-Agent', None),)
+            sql = 'INSERT INTO ' + self.table + '(' + ','.join(keys) + ') VALUES(' + ','.join(['?'] * len(keys)) + ')'
+            cur = con.execute(sql, values)
+            con.commit()
+
+            self.videos[data['video']] -= 1
+
+            # Generate and return Micoworkers VCODE
+            sha = hashlib.sha256()
+            sha.update(data['worker'] + data['campaign'] + API.SECRET)
+            return {'vcode': 'mw-' + sha.digest().encode('hex')}
 
 
 def main(argv):
@@ -83,13 +97,12 @@ def main(argv):
 
     config = {'/': {'server.thread_pool': 1,
                     'tools.CORS.on': True,
-                    'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
                     'tools.sessions.on': True,
                     'tools.response_headers.on': True,
                     'tools.response_headers.headers': [('Content-Type', 'text/plain')]}}
     cherrypy.config.update({'server.socket_host': '0.0.0.0',
                             'server.socket_port': int(args.port)})
-    cherrypy.quickstart(API(), '/answers', config)
+    cherrypy.quickstart(API(), '/', config)
 
 
 if __name__ == "__main__":
