@@ -17,7 +17,7 @@ class API(object):
         # {name: required}
         self.fields = {'q_%d' % i: i not in [1, 8, 19, 20, 21, 22, 23, 24, 31] for i in range(1, 32)}
         self.fields.update({'useragent': False, 'timestamps': True, 'worker': True, 'campaign': True, 'res': True, 'video': True})
-        self.videos = {'big_buck_bunny_480p_h264.mp4': 2, 'BigBuckBunny_320x180.mp4': 2}
+        self.videos = {'movie01.mp4': 2, 'movie02.mp4': 2, 'DoeEvenNormaal26-aug-2014.mp4': 2, 'big_buck_bunny_480p_h264.mp4': 2, 'BigBuckBunny_320x180.mp4': 2}
         self.setup_database()
 
     def setup_database(self):
@@ -52,18 +52,19 @@ class API(object):
         data = cherrypy.request.json
         print 'Received POST with data:', data
 
+        # Check for required keys + check if the video exists
+        error = None
         missing_keys = sorted([name for name, required in self.fields.iteritems() if required and name not in data])
         if missing_keys:
-            print 'Missing required keys:', ', '.join(missing_keys)
-            return
-
+            error = 'missing required keys (%s)' % ', '.join(missing_keys)
         if data['video'] not in self.videos:
-            print 'Unknown video:', data['video']
-            return
+            error = 'unknown video (%s)' % data['video']
+        if error:
+            return {'error': error}
 
-        data['timestamps'] = ','.join([str(ts) for ts in data['timestamps']])
-
+        # Add info to database
         with sqlite3.connect(API.DATABASE) as con:
+            data['timestamps'] = ','.join([str(ts) for ts in data['timestamps']])
             keys, values = zip(*data.iteritems())
             keys += ('useragent',)
             values += (cherrypy.request.headers.get('User-Agent', None),)
@@ -71,12 +72,13 @@ class API(object):
             cur = con.execute(sql, values)
             con.commit()
 
-            self.videos[data['video']] -= 1
+        # Mark video
+        self.videos[data['video']] -= 1
 
-            # Generate and return Micoworkers VCODE
-            sha = hashlib.sha256()
-            sha.update(data['worker'] + data['campaign'] + API.SECRET)
-            return {'vcode': 'mw-' + sha.digest().encode('hex')}
+        # Generate and return Micoworkers VCODE
+        sha = hashlib.sha256()
+        sha.update(data['worker'] + data['campaign'] + API.SECRET)
+        return {'vcode': 'mw-' + sha.digest().encode('hex')}
 
 
 def main(argv):

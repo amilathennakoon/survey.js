@@ -171,6 +171,7 @@ var questions = [
             type: 'text-field-large'}
 ];
 
+var video;
 var timestamps = [];
 var firstQuestionDisplayed = -1;
 var lastQuestionDisplayed = -1;
@@ -234,10 +235,22 @@ $(document).ready(function(){
                     data: JSON.stringify(answers),
                     processData: false,
                     success: function(response) {
-                        alert("Successfully send:"+JSON.stringify(answers)+"; Response:"+JSON.stringify(response));
+                        hideAllQuestions();
+                        $('#nextBtn').hide();
+                        if ('vcode' in response) {
+                            $('.completed-message').html('Thank you for participating in this experiment!<br><br>Your Microworkers vcode is <b>'+response['vcode']+'</b>.');
+                        }
+                        else if ('error' in response) {
+                            $('.completed-message').text('An error occurred: '+response['error']);
+                        }
+                        else {
+                            $('.completed-message').text('An unknown error occurred.');
+                        }
                     },
                     error: function(response) {
-                        alert("Could not send:"+JSON.stringify(answers));
+                        hideAllQuestions();
+                        $('#nextBtn').hide();
+                        $('.completed-message').text('An error occurred: could not send data to server');
                     }
             });
         }
