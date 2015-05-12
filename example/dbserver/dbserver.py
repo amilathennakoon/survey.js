@@ -7,6 +7,8 @@ import hashlib
 import argparse
 import cherrypy
 
+from cherrypy.lib import httpauth
+            
 
 class API(object):
 
@@ -14,6 +16,8 @@ class API(object):
     SECRET = 'microworkers_secret_key'
 
     def __init__(self):
+        # {username: password}
+        self.users = {'test':'test'}
         self.table = 'answers'
         # {name: required}
         self.fields = {'q_%d' % i: i not in [1, 8, 19, 20, 21, 22, 23, 24, 31] for i in range(1, 32)}
@@ -49,37 +53,51 @@ class API(object):
             cherrypy.response.headers['Access-Control-Max-Age'] = '1440'
             cherrypy.response.headers['Access-Control-Allow-Headers'] = 'X-Auth-Token,Content-Type,Accept'
             return {}
+        elif cherrypy.request.method == 'GET':
+            # Make sure the user is authorized (HTTP digest authentication)
+            cherrypy.lib.auth.digest_auth('dbserver.py', self.users)
+            
+            
+            # Get answers from database
+            results = []
+            with sqlite3.connect(API.DATABASE) as con:
+                sql = 'SELECT * FROM ' + self.table
+                cur = con.execute(sql)
+                keys = [d[0] for d in cur.description]
+                for row in cur.fetchall():
+                    results.append(dict(zip(keys, row)))
+            return results        
+        elif cherrypy.request.method == 'POST':
+            data = cherrypy.request.json
+            print 'Received POST with data:', data
 
-        data = cherrypy.request.json
-        print 'Received POST with data:', data
+            # Check for required keys + check if the video exists
+            error = None
+            missing_keys = sorted([name for name, required in self.fields.iteritems() if required and name not in data])
+            if missing_keys:
+                error = 'missing required keys (%s)' % ', '.join(missing_keys)
+            if data['video'] not in self.videos:
+                error = 'unknown video (%s)' % data['video']
+            if error:
+                return {'error': error}
 
-        # Check for required keys + check if the video exists
-        error = None
-        missing_keys = sorted([name for name, required in self.fields.iteritems() if required and name not in data])
-        if missing_keys:
-            error = 'missing required keys (%s)' % ', '.join(missing_keys)
-        if data['video'] not in self.videos:
-            error = 'unknown video (%s)' % data['video']
-        if error:
-            return {'error': error}
+            # Add answer to database
+            with sqlite3.connect(API.DATABASE) as con:
+                data['timestamps'] = ','.join([str(ts) for ts in data['timestamps']])
+                keys, values = zip(*data.iteritems())
+                keys += ('useragent',)
+                values += (cherrypy.request.headers.get('User-Agent', None),)
+                sql = 'INSERT INTO ' + self.table + '(' + ','.join(keys) + ') VALUES(' + ','.join(['?'] * len(keys)) + ')'
+                cur = con.execute(sql, values)
+                con.commit()
 
-        # Add info to database
-        with sqlite3.connect(API.DATABASE) as con:
-            data['timestamps'] = ','.join([str(ts) for ts in data['timestamps']])
-            keys, values = zip(*data.iteritems())
-            keys += ('useragent',)
-            values += (cherrypy.request.headers.get('User-Agent', None),)
-            sql = 'INSERT INTO ' + self.table + '(' + ','.join(keys) + ') VALUES(' + ','.join(['?'] * len(keys)) + ')'
-            cur = con.execute(sql, values)
-            con.commit()
+            # Mark video
+            self.videos[data['video']] -= 1
 
-        # Mark video
-        self.videos[data['video']] -= 1
-
-        # Generate and return Micoworkers VCODE
-        sha = hashlib.sha256()
-        sha.update(data['worker'] + data['campaign'] + API.SECRET)
-        return {'vcode': 'mw-' + sha.digest().encode('hex')}
+            # Generate and return Micoworkers VCODE
+            sha = hashlib.sha256()
+            sha.update(data['worker'] + data['campaign'] + API.SECRET)
+            return {'vcode': 'mw-' + sha.digest().encode('hex')}
 
 
 def main(argv):
