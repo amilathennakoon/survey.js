@@ -39,15 +39,29 @@ survey = { questions: undefined,
                 }
 
                 $.ajax({type: 'post',
-                        url: 'http://localhost:8000/session',
+                        url: 'http://localhost:7000/answers',
                         contentType: "application/json",
                         data: JSON.stringify(answers),
                         processData: false,
                         success: function(response) {
-                            alert("Successfully send:"+JSON.stringify(answers));
+                            self.hideAllQuestions();
+                            $('#nextBtn').hide();
+                            $('#backBtn').hide();
+                            if ('success' in response) {
+                                $('.completed-message').html('Thank you for participating in this survey!<br><br>'+response['success']);
+                            }
+                            else if ('error' in response) {
+                                $('.completed-message').text('An error occurred: '+response['error']);
+                            }
+                            else {
+                                $('.completed-message').text('An unknown error occurred.');
+                            }
                         },
                         error: function(response) {
-                            alert("Could not send:"+JSON.stringify(answers));
+                            self.hideAllQuestions();
+                            $('#nextBtn').hide();
+                            $('#backBtn').hide();
+                            $('.completed-message').text('An error occurred: could not send data to server');
                         }
                 });
             }
