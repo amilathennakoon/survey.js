@@ -8,7 +8,7 @@ import argparse
 import cherrypy
 
 from cherrypy.lib import httpauth
-            
+
 
 class API(object):
 
@@ -51,13 +51,16 @@ class API(object):
         if cherrypy.request.method == 'OPTIONS':
             cherrypy.response.headers['Connection'] = 'keep-alive'
             cherrypy.response.headers['Access-Control-Max-Age'] = '1440'
-            cherrypy.response.headers['Access-Control-Allow-Headers'] = 'X-Auth-Token,Content-Type,Accept'
+            cherrypy.response.headers['Access-Control-Allow-Headers'] = 'Authorization,X-Auth-Token,Content-Type,Accept'
             return {}
         elif cherrypy.request.method == 'GET':
             # Make sure the user is authorized (HTTP digest authentication)
-            cherrypy.lib.auth.digest_auth('dbserver.py', self.users)
-            
-            
+            try:
+                cherrypy.lib.auth.digest_auth('dbserver.py', self.users)
+            except cherrypy.HTTPError, e:
+                cherrypy.serving.response.headers['Access-Control-Expose-Headers'] = 'Www-Authenticate'
+                raise e
+
             # Get answers from database
             results = []
             with sqlite3.connect(API.DATABASE) as con:
@@ -66,7 +69,7 @@ class API(object):
                 keys = [d[0] for d in cur.description]
                 for row in cur.fetchall():
                     results.append(dict(zip(keys, row)))
-            return results        
+            return results
         elif cherrypy.request.method == 'POST':
             data = cherrypy.request.json
             print 'Received POST with data:', data
