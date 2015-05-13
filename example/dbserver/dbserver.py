@@ -76,7 +76,7 @@ class API(object):
             missing_keys = sorted([name for name, required in self.fields.iteritems() if required and name not in data])
             if missing_keys:
                 error = 'missing required keys (%s)' % ', '.join(missing_keys)
-            if data['video'] not in self.videos:
+            if 'video' in data and data['video'] not in self.videos:
                 error = 'unknown video (%s)' % data['video']
             if error:
                 return {'error': error}
