@@ -63,10 +63,6 @@ td {
   margin:auto;
 }
 
-tr {
-  border-bottom: 1px solid #ddd;
-}
-
 textarea {
   font: normal 13px arial,sans-serif;
 }
@@ -247,6 +243,14 @@ a.button {
 .question {
     margin-top: 10px;
     margin-bottom: 20px;
+}
+
+#login {
+    margin-bottom: 10px;
+}
+
+#username, #password {
+    width:150px;
 }
 
 @font-face {
