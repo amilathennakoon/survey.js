@@ -8,6 +8,9 @@ import argparse
 import cherrypy
 
 from cherrypy.lib import httpauth
+from collections import defaultdict
+
+DEBUG = True
 
 
 class API(object):
@@ -17,12 +20,18 @@ class API(object):
 
     def __init__(self):
         # {username: password}
-        self.users = {'test':'test'}
+        self.users = {'test': 'test'}
         self.table = 'answers'
         # {name: required}
         self.fields = {'q_%d' % i: i not in [1, 8, 19, 20, 21, 22, 23, 24, 31] for i in range(1, 32)}
         self.fields.update({'useragent': False, 'timestamps': True, 'worker': True, 'campaign': True, 'res': True, 'video': True})
-        self.videos = {'movie01.mp4': 2, 'movie02.mp4': 2, 'DoeEvenNormaal26-aug-2014.mp4': 2, 'big_buck_bunny_480p_h264.mp4': 2, 'BigBuckBunny_320x180.mp4': 2}
+
+        # Number of times a video should be watched (per campaign)
+        self.videos = defaultdict(lambda: {'movie01.mp4': 2, 'movie02.mp4': 2, 'DoeEvenNormaal26-aug-2014.mp4': 2, 'big_buck_bunny_480p_h264.mp4': 2, 'BigBuckBunny_320x180.mp4': 2})
+
+        # Campaigns which a worker participated in
+        self.workers = defaultdict(list)
+
         self.setup_database()
 
     def setup_database(self):
@@ -30,16 +39,27 @@ class API(object):
             sql = 'CREATE TABLE IF NOT EXISTS %s (%s)' % (self.table, ', '.join(self.fields))
             con.execute(sql)
 
-            sql = 'SELECT video, count(video) FROM %s GROUP BY video' % self.table
+            # Calculate how many times each of the videos still needs to be watched (per campaign)
+            sql = 'SELECT video, campaign, count(*) FROM %s GROUP BY video, campaign' % self.table
             cur = con.execute(sql)
-            for video, count in cur.fetchall():
-                if video in self.videos:
-                    self.videos[video] -= count
-            print self.videos
+            for video, campaign, count in cur.fetchall():
+                self.videos[campaign][video] -= count
+            if DEBUG:
+                print self.videos
+
+            # Count worker/campaign pairs
+            sql = 'SELECT worker, campaign, COUNT(*) AS count FROM %s GROUP BY worker, campaign' % self.table
+            cur = con.execute(sql)
+            for worker, campaign, count in cur.fetchall():
+                if count > 1:
+                    raise RuntimeError('Worker has participated multiple times in a single campaign!')
+                self.workers[worker].append(campaign)
+            if DEBUG:
+                print self.workers
 
     @cherrypy.expose
-    def video(self):
-        choices = [k for k, v in self.videos.iteritems() if v > 0]
+    def video(self, campaign):
+        choices = [k for k, v in self.videos[campaign].iteritems() if v > 0]
         if choices:
             video_url = random.choice(choices)
             return video_url
@@ -79,8 +99,11 @@ class API(object):
             missing_keys = sorted([name for name, required in self.fields.iteritems() if required and name not in data])
             if missing_keys:
                 error = 'missing required keys (%s)' % ', '.join(missing_keys)
-            if 'video' in data and data['video'] not in self.videos:
+            if 'video' in data and data['video'] not in self.videos[data['campaign']]:
                 error = 'unknown video (%s)' % data['video']
+            # Check if worker has already participated in this campaign
+            if data['campaign'] in self.workers[data['worker']]:
+                error = 'already participated in this campaign'
             if error:
                 return {'error': error}
 
@@ -95,7 +118,9 @@ class API(object):
                 con.commit()
 
             # Mark video
-            self.videos[data['video']] -= 1
+            self.videos[data['campaign']][data['video']] -= 1
+            # Mark worker
+            self.workers[data['worker']].append(data['campaign'])
 
             # Generate and return Micoworkers VCODE
             sha = hashlib.sha256()

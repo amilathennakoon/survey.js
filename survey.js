@@ -9,14 +9,16 @@ survey = { questions: undefined,
 
     survey.setup_survey = function(questions) {
         var self = this;
+        var worker = this.getParameterByName("worker");
+        var campaign = this.getParameterByName("campaign");
         this.questions = questions;
         
         this.questions.forEach(function(question) {
             self.generateQuestionElement( question );
         });
-        $('input[name="worker"]').val(this.getParameterByName("worker"));
+        $('input[name="worker"]').val(worker);
         
-        $.get('http://localhost:7000/video', function (response) {
+        $.get('http://localhost:7000/video?campaign=' + campaign, function (response) {
                 if (!response) {
                     $('#nextBtn').addClass('disabled');  
                     alert('There is no video to view. This likely means we have enough participants for this experiment');
@@ -53,7 +55,7 @@ survey = { questions: undefined,
                 var answers = {video: self.video,
                                res: $(window).width() + "x" + $(window).height(),
                                timestamps: self.timestamps.concat([now]),
-                               campaign: self.getParameterByName("campaign")};
+                               campaign: campaign};
                 for (i = 0; i < self.questions.length; i++) {
                     answers[self.questions[i].id] = self.getQuestionAnswer(self.questions[i]);
                 }
