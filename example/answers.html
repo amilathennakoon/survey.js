@@ -13,6 +13,11 @@
             $('#loginBtn').click(function() {
                 var req = new digestAuthRequest('GET', 'http://localhost:7000/answers', $('#username').val(), $('#password').val());
                 req.request(function(json) {
+                    if (json.length == 0) {
+                        $('#login').hide();
+                        $('.completed-message').text('Nothing to display');
+                    }
+                    
                     var keys = [];
                     for (i = 0; i < json.length; i++) {
                         for (var key in json[i])

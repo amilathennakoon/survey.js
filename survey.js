@@ -45,7 +45,7 @@ survey = { questions: undefined,
             if (!ok)
                 return
 
-            now = new Date().getTime()
+            var now = new Date().getTime()
 
             if ( $('#nextBtn').text().indexOf('Continue') === 0 ) {
                 self.timestamps.push(now);
@@ -55,7 +55,10 @@ survey = { questions: undefined,
                 var answers = {video: self.video,
                                res: $(window).width() + "x" + $(window).height(),
                                timestamps: self.timestamps.concat([now]),
-                               campaign: campaign};
+                               campaign: campaign,
+                               speeds: [document.getElementById("player_a").contentWindow.speed,
+                                        document.getElementById("player_b").contentWindow.speed,
+                                        document.getElementById("player_c").contentWindow.speed]};
                 for (i = 0; i < self.questions.length; i++) {
                     answers[self.questions[i].id] = self.getQuestionAnswer(self.questions[i]);
                 }

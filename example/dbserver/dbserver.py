@@ -24,7 +24,7 @@ class API(object):
         self.table = 'answers'
         # {name: required}
         self.fields = {'q_%d' % i: i not in [1, 8, 19, 20, 21, 22, 23, 24, 31] for i in range(1, 32)}
-        self.fields.update({'useragent': False, 'timestamps': True, 'worker': True, 'campaign': True, 'res': True, 'video': True})
+        self.fields.update({'useragent': False, 'timestamps': True, 'worker': True, 'campaign': True, 'res': True, 'video': True, 'speeds': True})
 
         # Number of times a video should be watched (per campaign)
         self.videos = defaultdict(lambda: {'movie01.mp4': 2, 'movie02.mp4': 2, 'DoeEvenNormaal26-aug-2014.mp4': 2, 'big_buck_bunny_480p_h264.mp4': 2, 'BigBuckBunny_320x180.mp4': 2})
@@ -110,6 +110,7 @@ class API(object):
             # Add answer to database
             with sqlite3.connect(API.DATABASE) as con:
                 data['timestamps'] = ','.join([str(ts) for ts in data['timestamps']])
+                data['speeds'] = ','.join([str(ts) for ts in data['speeds']])
                 keys, values = zip(*data.iteritems())
                 keys += ('useragent',)
                 values += (cherrypy.request.headers.get('User-Agent', None),)

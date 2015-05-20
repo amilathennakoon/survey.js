@@ -27,11 +27,14 @@
                     $('#progressbar').find('div').width(width).html(Math.round(progress * 100) + "%&nbsp;");
                 };
                 
-                r.onload = function() {
+                r.onload = function(e) {
                     if (this.readyState != 4 || this.status != 200) {
                         $('#message').text("Could not load video");
                         return;
                     }
+                    
+                    speed = Math.round( e.total / ( ( new Date() - startTime ) / 1000 ) );
+                    
                     $('#message').hide();
                     $('#progressbar').hide();
                     var url = URL.createObjectURL(r.response);
@@ -48,6 +51,7 @@
                 };
                 r.open("GET", getParameterByName("file") + "?date=" + (new Date().getTime()));
                 r.responseType = "blob";
+                startTime = new Date();
                 r.send();
             });
         </script>
