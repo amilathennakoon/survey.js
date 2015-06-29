@@ -240,6 +240,11 @@ a.button {
 	box-shadow: 0 1px 1px rgba(0,0,0,.1);
 }
 
+.button.disabled {
+  color: #aaa;
+  pointer-events: none;
+}
+
 .question {
     margin-top: 10px;
     margin-bottom: 20px;

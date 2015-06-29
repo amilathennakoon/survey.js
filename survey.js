@@ -217,6 +217,18 @@ survey = { questions: undefined,
             $('#nextBtn').text('Continue »'); 
             $('#nextBtn').removeClass('blue');
         }
+
+        $("iframe[id^='player_']:visible").each(function () {
+            $('#nextBtn').addClass('disabled');
+            this.contentWindow.player.addListener('state', listener);
+            function listener(data) {
+                switch (data) {
+                    case "COMPLETED":
+                        $('#nextBtn').removeClass('disabled');
+                        break;
+                }
+            }
+        });
     }
 })(survey, jQuery);
 
