@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import sys
 import json
+import urllib
 import random
 import sqlite3
 import hashlib
@@ -18,12 +19,12 @@ class API(object):
     DATABASE = 'answers.db'
     SECRET = 'microworkers_secret_key'
 
-    def __init__(self):
+    def __init__(self, questions, users):
         # {username: password}
-        self.users = {'test': 'test'}
+        self.users = users
         self.table = 'answers'
         # {name: required}
-        self.fields = {'q_%d' % i: i not in [1, 8, 19, 20, 21, 22, 23, 24, 31] for i in range(1, 32)}
+        self.fields = {q['id']: q.get('required', False) for q in questions}
         self.fields.update({'useragent': False, 'timestamps': True, 'worker': True, 'campaign': True, 'res': True, 'video': True, 'speeds': True})
 
         # Number of times a video should be watched (per campaign)
@@ -38,6 +39,13 @@ class API(object):
         with sqlite3.connect(API.DATABASE) as con:
             sql = 'CREATE TABLE IF NOT EXISTS %s (%s)' % (self.table, ', '.join(self.fields))
             con.execute(sql)
+
+            sql = 'SELECT * FROM %s LIMIT 1' % self.table
+            cur = con.execute(sql)
+            columns_have = [d[0] for d in cur.description]
+            columns_need = self.fields.keys()
+            if columns_have != columns_need:
+                raise Exception('Database does not have the right layout')
 
             # Calculate how many times each of the videos still needs to be watched (per campaign)
             sql = 'SELECT video, campaign, count(*) FROM %s GROUP BY video, campaign' % self.table
@@ -134,6 +142,8 @@ def main(argv):
 
     try:
         parser.add_argument('-p', '--port', help='Listen port', required=True)
+        parser.add_argument('-q', '--questions', help='URL of JSON-formatted questions', required=True)
+        parser.add_argument('-u', '--users', help='Users that are allowed to get the answers (e.g. user1:pass1,user2:pass2)', required=True)
         parser.add_help = True
         args = parser.parse_args(sys.argv[1:])
 
@@ -145,6 +155,10 @@ def main(argv):
         cherrypy.response.headers["Access-Control-Allow-Origin"] = "*"
     cherrypy.tools.CORS = cherrypy.Tool('before_handler', CORS)
 
+    questions = json.loads(urllib.urlopen(args.questions).read())
+    users = dict([user.split(':') for user in args.users.split(',')])
+    api = API(questions, users)
+
     config = {'/': {'server.thread_pool': 1,
                     'tools.CORS.on': True,
                     'tools.sessions.on': True,
@@ -152,7 +166,7 @@ def main(argv):
                     'tools.response_headers.headers': [('Content-Type', 'text/plain')]}}
     cherrypy.config.update({'server.socket_host': '0.0.0.0',
                             'server.socket_port': int(args.port)})
-    cherrypy.quickstart(API(), '/', config)
+    cherrypy.quickstart(api, '/', config)
 
 
 if __name__ == "__main__":
