@@ -35,6 +35,9 @@ survey = { questions: undefined,
         });
       
         $('#nextBtn').click(function() {
+            if ($('#nextBtn').hasClass('disabled'))
+                return;
+
             var ok = true;
             for (i = self.firstQuestionDisplayed; i <= self.lastQuestionDisplayed; i++) {
                 if (self.questions[i]['required'] === true && !self.getQuestionAnswer(questions[i])) {
