@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import re
 import sys
 import json
 import urllib
@@ -10,9 +11,22 @@ import cherrypy
 
 from cherrypy.lib import httpauth
 from collections import defaultdict
+from openpyxl import Workbook
+from StringIO import StringIO
 
 DEBUG = True
 
+
+def atoi(text):
+    return int(text) if text.isdigit() else text
+
+def natural_keys(text):
+    '''
+    alist.sort(key=natural_keys) sorts in human order
+    http://nedbatchelder.com/blog/200712/human_sorting.html
+    (See Toothy's implementation in the comments)
+    '''
+    return [ atoi(c) for c in re.split('(\d+)', text) ]
 
 class API(object):
 
@@ -89,15 +103,7 @@ class API(object):
                 cherrypy.serving.response.headers['Access-Control-Expose-Headers'] = 'Www-Authenticate'
                 raise e
 
-            # Get answers from database
-            results = []
-            with sqlite3.connect(API.DATABASE) as con:
-                sql = 'SELECT * FROM ' + self.table
-                cur = con.execute(sql)
-                keys = [d[0] for d in cur.description]
-                for row in cur.fetchall():
-                    results.append(dict(zip(keys, row)))
-            return results
+            return self.get_answers()
         elif cherrypy.request.method == 'POST':
             data = cherrypy.request.json
             print 'Received POST with data:', data
@@ -136,6 +142,43 @@ class API(object):
             sha.update(data['worker'] + data['campaign'] + API.SECRET)
             return {'vcode': 'mw-' + sha.digest().encode('hex')}
 
+    @cherrypy.expose
+    def export(self):
+        if cherrypy.request.method == 'OPTIONS':
+            cherrypy.response.headers['Connection'] = 'keep-alive'
+            cherrypy.response.headers['Access-Control-Max-Age'] = '1440'
+            cherrypy.response.headers['Access-Control-Allow-Headers'] = 'Authorization,X-Auth-Token,Content-Type,Accept'
+            return {}
+        elif cherrypy.request.method == 'GET':
+            # Make sure the user is authorized (HTTP digest authentication)
+            try:
+                cherrypy.lib.auth.digest_auth('dbserver.py', self.users)
+            except cherrypy.HTTPError, e:
+                cherrypy.serving.response.headers['Access-Control-Expose-Headers'] = 'Www-Authenticate'
+                raise e
+
+            # Export to Excel file
+            wb = Workbook()
+            ws = wb.active
+            keys = sorted(self.fields.keys(), key=natural_keys)
+            ws.append(keys)
+            for a in self.get_answers():
+                ws.append([a.get(k, '') for k in keys])
+            cherrypy.response.headers['Content-Disposition'] = 'attachment; filename="export.xlsx"'
+            file = StringIO()
+            wb.save(file)
+            return file.getvalue()
+
+    def get_answers(self):
+        # Get answers from database
+        results = []
+        with sqlite3.connect(API.DATABASE) as con:
+            sql = 'SELECT * FROM ' + self.table
+            cur = con.execute(sql)
+            keys = [d[0] for d in cur.description]
+            for row in cur.fetchall():
+                results.append(dict(zip(keys, row)))
+        return results
 
 def main(argv):
     parser = argparse.ArgumentParser(description='Simple database server')
