@@ -1,14 +1,15 @@
 [  
     {  
-        "text":"<div>First of all, we would like to thank you for participating this experiment. We are carrying out non-profit research at a university to understand how people experience online videos.  In this experiment, we ask you to fill in a demographic questionnaire, then spend some time watching a video and afterwards answer some questions. <p>By accepting this Task, you agree that:</p><p>We may publish excerpts of your answers for scientific articles;<br>This experiment will record your interactions;<br>We will NOT publish any information that could be linked to you</p><p>Note on answer questions:</p><p>There are no absolute wrong or right answers for this task. What we ask is for you to give us your opinions related to the video that you watch.</p><p>Task duration and reward:<br>The whole experiment takes about 5 minutes, and you will get 0.3 USD after you finish the task successfully</p><p>Contact information:<br>You can always contact the requester for this Task at <a href=\"mailto:y.zhu-1@tudelft.nl\">y.zhu-1@tudelft.nl</a>. Please make sure you include the title of the Task when sending an email to this address.<br></p><p></p><p></p><p></p><p></p><p></p></div><p><b>Please Type your Microworker ID here</b></p>",
-        "comment":"<p><b>If you would like to participant in this experiment, please click CONTINUE</b></p>",
+        "text":"<div>First of all, we would like to thank you for participating in this experiment. We are carrying out non-profit research at Delft University of Technology to understand how people experience online videos.  In this experiment, we ask you to fill out a demographic questionnaire, then spend some time watching a video and afterwards answer some questions. <p><b>By accepting this Task, you agree that:</b></p><p>We may publish excerpts of your answers for scientific articles;<br>This experiment will record your interactions;<br>We will NOT publish any information that could be linked to you.</p><p><b>Note on answering questions:</b></p><p>There are no absolute wrong or right answers for this task. What we ask is for you to give us your opinions related to the video that you watch. </p>PLEASE NOTE: THERE IS NO WAY TO GO BACK ONCE YOU CLICK THE CONTINUE BUTTON!</p><p><b>Task duration:</b><br>The whole experiment takes about 5 minutes. </p><p><b>Contact information:</b><br>You can always contact the requester for this Task at <a href=\"mailto:y.zhu-1@tudelft.nl\">y.zhu-1@tudelft.nl</a>. Please make sure you include the title of the Task when sending an email to this address.<br></p><p></p><p></p><p></p><p></p><p></p></div><p><b>Please Type your name here</b></p>",
+        "comment":"<p><b>If you would like to participate in this experiment, please click CONTINUE</b></p>",
         "id":"worker",
         "break_after":true,
         "required":true,
         "type":"text-field-small"
     },
     {  
-        "text":"<div><p><h2>Instructions</h2>This experiment consists of five parts.</p><p>Part 1 Demographic questionnaire<br>In this part, you are requested to answer some questions related to your daily online video experience.</p><p>Part 2 Personality questionnaire<br>In this part, you are requested to answer some questions related to your personality. Please answer the questions honestly.</p><p>Part 3 Training<br>In this part, you will watch two sample videos. One video represents the highest possible quality you will get while another video represents the lowest possible quality you will get.</p><p>Part 4  Watching the test video<br>In this part, you will watch the actual test video. The video lasts around 1 minute. We require that you watch the entire video clip.</p><p>Part 5 Test questionnaire<br>After watching the test video, you are requested to fill in a questionnaire related to your experience. Please note that the experience we ask is only related to the test video you just watched.</p><p>After finishing the whole experiment, you will get a code. Please use this code to get your reward via Mircoworkers.</p><p><b>General feedback</b><br>If you encounter any problems with this task or have any other comments, please report them here. You can also use this textbox to tell us if you liked this Task or have any suggestions.</p></div>",
+        "text":"<div><p><h2>Instructions</h2>This task consists in completing an experiment that will help us in our research at Delft University of Technology.</p><p>It consists in 3 parts:</p><p>First, we will ask you fill out a questionnaire about yourself and your preferences for online video watching. Please answer the questions honestly. Data will be anonymized and kept in a secure server for further analysis.</p><p>Second, you will watch two sample videos, for training, i.e., to get you to practice your main task. </p><p>Finally, you will watch the actual test video. The video lasts around 1 minute. We require that you watch the entire video clip. After watching the test video, we will ask you to answer some questions about how you experienced the video.</p><p>The Microworkers payment code will be provided to you once you have completed all three steps. </p><p><b>General feedback</b><br>If you encounter any problems with this task or have any other comments, please report them here. You can also use this textbox to tell us if you liked this Task or have any suggestions.</p></div>",
+        "comment":"<p>PLEASE NOTE: THERE IS NO WAY TO GO BACK ONCE YOU CLICK THE CONTINUE BUTTON!</p>",
         "id":"q_1",
         "break_after":true,
         "type":"text-field-large"
@@ -49,7 +50,7 @@
         ]
     },
     {  
-        "text":"<p><b>What is the resolution of your screen?</b><br>Please write \"DK\" if you don't know the answer</p>",
+        "text":"<p><b>What is the resolution of your screen (in pixels, for example: 1280*720)?</b><br>Please write \"DK\" if you don't know the answer</p>",
         "id":"q_6",
         "required":true,
         "type":"text-field-small"
@@ -73,14 +74,54 @@
             "Very much"
         ]
     },
+ {  
+        "text":"<p><b>Are you interested in comedy video?</b></p>",
+        "id":"q_32",
+        "required":true,
+        "type":"single-select-oneline",
+        "options":[  
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7"
+        ],
+        "labels":[  
+            "Not at all",
+            "Very much"
+        ]
+    },
+ {  
+        "text":"<p><b>Are you interested in education video?</b></p>",
+        "id":"q_33",
+        "required":true,
+        "type":"single-select-oneline",
+        "options":[  
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7"
+        ],
+        "labels":[  
+            "Not at all",
+            "Very much"
+        ]
+    },
+
     {  
         "text":"<p><b>General feedback</b><br>If you encounter any problems with this task or have any other comments, please report them here. You can also use this textbox to tell us if you liked this Task or have any suggestions.</p>",
+        "comment":"<p>PLEASE NOTE: THERE IS NO WAY TO GO BACK ONCE YOU CLICK THE CONTINUE BUTTON!</p>",
         "id":"q_8",
         "break_after":true,
         "type":"text-field-large"
     },
     {  
-        "text":"<div><p><h2>Part 2 Personality Questionnaire</h2><br>In the following part, there are a number of personality traits that may or may not apply to you. Please mark the extent to which you agree or disagree with that statement. You should rate the extent to which the pair of traits applies to you, even if one characteristic applies more strongly than the other.</p><p><h2>I see myself as</h2></p><p><b>Extraverted, enthusiastic</b></p></div>",
+        "text":"<div><p><h2>Part 2 Personality Questionnaire</h2><br>In the following part, there are a number of statements referring to personality traits that may or may not apply to you. Please mark the extent to which you agree or disagree with each statement, as honestly as possible. These data will not be distributed and will be used in a fully anonymized form for research purposes only.</p><p>If you have troubles understanding the terms, please indicate it in the textbox below.</p><p><h2>I see myself as</h2></p><p><b>Extraverted, enthusiastic</b></p></div>",
         "id":"q_9",
         "required":true,
         "type":"single-select-oneline",
@@ -271,24 +312,39 @@
     },
     {  
         "text":"<p><b>General feedback</b><br>If you encounter any problems with this task or have any other comments, please report them here. You can also use this textbox to tell us if you liked this Task or have any suggestions.</p>",
+        "comment":"<p>PLEASE NOTE: THERE IS NO WAY TO GO BACK ONCE YOU CLICK THE CONTINUE BUTTON!</p>",
         "id":"q_19",
         "break_after":true,
         "type":"text-field-large"
     },
     {  
-        "text":"<div><p><h2>Part 3 Training</h2><br>In this Part you will watch TWO sample videos, The first video represents the highest possible video quality you will get, the second video represents the lowest possible video quality you will get. The second video will not be played until you finished the first video. After watching these two videos, there is one sample question to help you get familiar with our test questionnaire.</p><p><h2>Sample High Quality</h2><iframe id=\"player_a\" src=\"video.html?file=big_buck_bunny_480p_h264.mp4\" allowfullscreen frameborder=\"0\" scrolling=\"no\" width=\"620\" height=\"385\"></iframe><small>If you have difficulties watching the video, you can try to refresh by clicking <a href=\"javascript:void(0)\" onclick=\"window.onbeforeunload=null; document.getElementById('player_a').contentWindow.location.reload()\">here</a>.</small></p><p><b>General feedback</b><br>If you encounter any problems with this task or have any other comments, please report them here. You can also use this textbox to tell us if you liked this Task or have any suggestions.</p></div>",
+        "text":"<div><p><h2>Part 3 Training</h2><br>In this Part you will watch 2 sample videos. The first video represents an example of high video quality. The second video represents an example of low video quality. The second video will not be played until you finished the first video. After watching these two videos, there is one sample question to help you get familiar with our test questionnaire.<p><b>Please click the '>' button to play the video</b></p><p><h2>Sample High Quality</h2><iframe id=\"video_hq_iframe\" src=\"video.html?file=samplehigh.mp4\" allowfullscreen frameborder=\"0\" scrolling=\"no\" width=\"640\" height=\"360\"></iframe><small>If you have difficulties watching the video, you can try to refresh by clicking <a href=\"javascript:void(0)\" onclick=\"window.onbeforeunload=null; document.getElementById('video_hq_iframe').contentWindow.location.reload()\">here</a>.</small></p>",
+        "id": "video_hq",
+        "type": "video",
+        "required": true
+    },
+    {
+        "text": "<p><b>General feedback</b><br>If you encounter any problems with this task or have any other comments, please report them here. You can also use this textbox to tell us if you liked this Task or have any suggestions.</p></div>",
+        "comment":"<p>PLEASE NOTE: THERE IS NO WAY TO GO BACK ONCE YOU CLICK THE CONTINUE BUTTON!</p>",
         "id":"q_20",
         "break_after":true,
         "type":"text-field-large"
     },
     {  
-        "text":"<div><p><h2>Part 3 Training</h2><br>In this Part you will watch TWO sample videos, The first video represents the highest possible video quality you will get, the second video represents the lowest possible video quality you will get. The second video will not be played until you finished the first video. After watching these two videos, there is one sample question to help you get familiar with our test questionnaire.</p><p><h2>Sample Low Quality</h2><iframe id=\"player_b\" src=\"video.html?file=big_buck_bunny_480p_h264.mp4\" allowfullscreen frameborder=\"0\" scrolling=\"no\" width=\"620\" height=\"385\"></iframe><small>If you have difficulties watching the video, you can try to refresh by clicking <a href=\"javascript:void(0)\" onclick=\"window.onbeforeunload=null; document.getElementById('player_b').contentWindow.location.reload()\">here</a>.</small></p><p><b>General feedback</b><br>If you encounter any problems with this task or have any other comments, please report them here. You can also use this textbox to tell us if you liked this Task or have any suggestions.</p></div>",
+        "text":"<div><p><h2>Part 3 Training</p><p><b>Please click the '>' button to play the video</b></p><p><h2>Sample Low Quality</h2><iframe id=\"video_lq_iframe\" src=\"video.html?file=samplelow.mp4\" allowfullscreen frameborder=\"0\" scrolling=\"no\" width=\"640\" height=\"360\"></iframe><small>If you have difficulties watching the video, you can try to refresh by clicking <a href=\"javascript:void(0)\" onclick=\"window.onbeforeunload=null; document.getElementById('video_lq_iframe').contentWindow.location.reload()\">here</a>.</small></p>",
+        "id": "video_lq",
+        "type": "video",
+        "required": true
+    },
+    {
+        "text": "<p><b>General feedback</b><br>If you encounter any problems with this task or have any other comments, please report them here. You can also use this textbox to tell us if you liked this Task or have any suggestions.</p></div>",
+        "comment":"<p>PLEASE NOTE: THERE IS NO WAY TO GO BACK ONCE YOU CLICK THE CONTINUE BUTTON!</p>",
         "id":"q_21",
         "break_after":true,
         "type":"text-field-large"
     },
     {  
-        "text":"<div><p><h2>Part 3 Training</h2><br>In this Part you will watch TWO sample videos, The first video represents the highest possible video quality you will get, the second video represents the lowest possible video quality you will get. The second video will not be played until you finished the first video. After watching these two videos, there is one sample question to help you get familiar with our test questionnaire.</p><p><h2>Sample question</h2></p><p><b>The video clip was enjoyable</b></p></div>",
+        "text":"<div><p><h2>Part 3 Training</h2><br></p><p><h2>Sample Questions</h2></p><p>This are two sample question from the questionnaire we will ask you to fill in after you watched the main video (next step). This is for you to practice with the question answering. Please answer the question referring to the last video you saw.</p><p><b>The video clip was enjoyable</b></p></div>",
         "id":"q_22",
         "type":"single-select-oneline",
         "options":[  
@@ -306,7 +362,22 @@
         ]
     },
     {  
+        "text":"<p><b>Did you perceive any visual impairments in the video (for example: blur, ringing or blockiness)?</b></p>",
+        "comment":"<p>PLEASE NOTE: THERE IS NO WAY TO GO BACK ONCE YOU CLICK THE CONTINUE BUTTON!</p>",
+        "id":"q_34",
+        "required":true,
+        "type":"single-select",
+        "options":[  
+         "Imperceptiable",
+         "Perceptible, but not annoying",
+         "Slightly annoying",
+         "Annoying",
+         "Very annoying"
+        ]
+    },
+    {  
         "text":"<p><b>General feedback</b><br>If you encounter any problems with this task or have any other comments, please report them here. You can also use this textbox to tell us if you liked this Task or have any suggestions.</p>",
+        "comment":"<p>PLEASE NOTE: THERE IS NO WAY TO GO BACK ONCE YOU CLICK THE CONTINUE BUTTON!</p>",
         "id":"q_23",
         "break_after":true,
         "type":"text-field-large"
@@ -321,13 +392,20 @@
         ]
     },
     {  
-        "text":"<div><p><h2>Part 4 Watching the test video</h2><br>After watching the whole video, please click continue to enter the last part. Please note you are requested to finish watching the entire video.</p><p><iframe id=\"player_c\" src=\"\" allowfullscreen frameborder=\"0\" scrolling=\"no\" width=\"620\" height=\"385\"></iframe><small>If you have difficulties watching the video, you can try to refresh by clicking <a href=\"javascript:void(0)\" onclick=\"window.onbeforeunload=null; document.getElementById('player_c').contentWindow.location.reload()\">here</a>.</small></p><p><b>General feedback</b><br>If you encounter any problems with this task or have any other comments, please report them here. You can also use this textbox to tell us if you liked this Task or have any suggestions.</p></div>",
+        "text":"<div><p><h2>Part 4 Watching the test video</h2><br>After watching the whole video, please click continue to enter the last part. Please note you are requested to finish watching the <b>ENTIRE</b> video.</p><p><iframe id=\"video_qos_iframe\" src=\"\" allowfullscreen frameborder=\"0\" scrolling=\"no\" width=\"640\" height=\"360\"></iframe><small>If you have difficulties watching the video, you can try to refresh by clicking <a href=\"javascript:void(0)\" onclick=\"window.onbeforeunload=null; document.getElementById('video_qos_iframe').contentWindow.location.reload()\">here</a>.</small></p>",
+        "id": "video_qos",
+        "type": "video",
+        "required": true
+    },
+    {
+        "text": "<p><b>General feedback</b><br>If you encounter any problems with this task or have any other comments, please report them here. You can also use this textbox to tell us if you liked this Task or have any suggestions.</p></div>",
+        "comment":"<p>PLEASE NOTE: THERE IS NO WAY TO GO BACK ONCE YOU CLICK THE CONTINUE BUTTON!</p>",
         "id":"q_24",
         "break_after":true,
         "type":"text-field-large"
     },
     {  
-        "text":"<div><p><h2>Part 5 Video Experience Questionnaire</h2><br>In this part, you will be asked to fill in several questions related to your visual experience. Note that the experience we asked is ONLY refer to the video you just watched. Please answer all questions honestly.</p><p><b>The video clip was enjoyable</b></p></div>",
+        "text":"<div><p><h2>Part 5 Video Experience Questionnaire</h2><br>In this part, you will be asked to fill out several questions related to your experience with the video you just watched. We are interested about your experience with this video ONLY. Please answer all questions honestly.</p><p><b>The video clip was enjoyable</b></p></div>",
         "id":"q_25",
         "required":true,
         "type":"single-select-oneline",
@@ -343,6 +421,19 @@
         "labels":[  
             "fully disagree",
             "fully agree"
+        ]
+    },
+ {  
+        "text":"<p><b>The quality of the video was: </b></p>",
+        "id":"q_35",
+        "required":true,
+        "type":"single-select",
+        "options":[  
+         "Bad",
+         "Poor",
+         "Fair",
+         "Good",
+         "Excellent"
         ]
     },
     {  
@@ -408,19 +499,39 @@
         "required":true,
         "type":"single-select",
         "options":[  
-            "Very annoying",
-            "Annoying",
-            "Slightly annoying",
-            "Perceptible, but not annoying",
-            "Imperceptiable"
+         "Imperceptiable",
+         "Perceptible, but not annoying",
+         "Slightly annoying",
+         "Annoying",
+         "Very annoying"
         ]
     },
     {  
-        "text":"<p><b>Which type of sport they played in the video?</b></p>",
+        "text":"<p><b>The video was exciting</b></p>",
         "id":"q_30",
+        "required":true,
+        "type":"single-select-oneline",
+        "options":[  
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7"
+        ],
+        "labels":[  
+            "fully disagree",
+            "fully agree"
+        ]
+    },
+ {  
+        "text":"<p><b>What did you see in the video?</b><br>for example: a bird or a man</p>",
+        "id":"q_36",
         "required":true,
         "type":"text-field-small"
     },
+
     {  
         "text":"<p><b>General feedback</b><br>If you encounter any problems with this task or have any other comments, please report them here. You can also use this textbox to tell us if you liked this Task or have any suggestions.</p>",
         "id":"q_31",

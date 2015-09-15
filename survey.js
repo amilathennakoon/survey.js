@@ -24,7 +24,7 @@ survey = { questions: undefined,
                     alert('There is no video to view. This likely means we have enough participants for this experiment');
                 }
                 self.video = response;
-                $("#player_c").attr("src", "video.html?file="+self.video);
+                $("iframe[id^='video_qos']").attr("src", "video.html?file="+self.video);
             }
         );
       
@@ -40,7 +40,13 @@ survey = { questions: undefined,
 
             var ok = true;
             for (i = self.firstQuestionDisplayed; i <= self.lastQuestionDisplayed; i++) {
-                if (self.questions[i]['required'] === true && !self.getQuestionAnswer(questions[i])) {
+                if (self.questions[i]['type'] === 'video') {
+                    if (!$("iframe[id^='" + self.questions[i].id + "']:visible")[0].contentWindow.watched) {
+                        $('.question-container > div.question:nth-child(' + (i+1) + ') > .required-message').show();
+                        ok = false;
+                    }
+                }
+                else if (self.questions[i]['required'] === true && !self.getQuestionAnswer(questions[i])) {
                     $('.question-container > div.question:nth-child(' + (i+1) + ') > .required-message').show();
                     ok = false;
                 }
@@ -59,9 +65,9 @@ survey = { questions: undefined,
                                res: $(window).width() + "x" + $(window).height(),
                                timestamps: self.timestamps.concat([now]),
                                campaign: campaign,
-                               speeds: [document.getElementById("player_a").contentWindow.speed,
-                                        document.getElementById("player_b").contentWindow.speed,
-                                        document.getElementById("player_c").contentWindow.speed]};
+                               speeds: [document.getElementById("video_lq_iframe").contentWindow.speed,
+                                        document.getElementById("video_hq_iframe").contentWindow.speed,
+                                        document.getElementById("video_qos_iframe").contentWindow.speed]};
                 for (i = 0; i < self.questions.length; i++) {
                     answers[self.questions[i].id] = self.getQuestionAnswer(self.questions[i]);
                 }
@@ -159,11 +165,14 @@ survey = { questions: undefined,
             questionElement.addClass('text-field-large');
             questionAnswerElement.append('<textarea rows="8" cols="0" class="text" name="' + question.id + '">');
         }
-        if ( question.required === true ) {
+        if ( question.required === true && question.type !== 'video') {
             var last = questionTextElement.find(':last');
             (last.length ? last : questionTextElement).append('<span class="required-asterisk" aria-hidden="true">*</span>');
         }
-        questionAnswerElement.after('<div class="required-message">This is a required question</div>');
+        if (question.type === 'video')
+            questionAnswerElement.after('<div class="required-message">Please watch the video before continuing</div>');
+        else
+            questionAnswerElement.after('<div class="required-message">This is a required question</div>');
         questionElement.hide();
     }
 
@@ -220,18 +229,6 @@ survey = { questions: undefined,
             $('#nextBtn').text('Continue »'); 
             $('#nextBtn').removeClass('blue');
         }
-
-        $("iframe[id^='player_']:visible").each(function () {
-            $('#nextBtn').addClass('disabled');
-            this.contentWindow.player.addListener('state', listener);
-            function listener(data) {
-                switch (data) {
-                    case "COMPLETED":
-                        $('#nextBtn').removeClass('disabled');
-                        break;
-                }
-            }
-        });
     }
 })(survey, jQuery);
 
