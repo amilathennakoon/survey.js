@@ -21,7 +21,7 @@
                     var keys = [];
                     for (i = 0; i < json.length; i++) {
                         for (var key in json[i])
-                            if (keys.indexOf(key) < 0)
+                            if (keys.indexOf(key) < 0 && !key.startsWith('video_'))
                                 keys.push(key);
                     }
                     keys.sort(function(x, y) {
