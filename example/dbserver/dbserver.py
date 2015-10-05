@@ -2,12 +2,15 @@
 import re
 import sys
 import json
-import urllib
 import random
 import sqlite3
 import hashlib
 import argparse
 import cherrypy
+import requests
+import lxml.html
+
+from lxml.cssselect import CSSSelector
 
 from cherrypy.lib import httpauth
 from collections import defaultdict
@@ -28,21 +31,29 @@ def natural_keys(text):
     '''
     return [ atoi(c) for c in re.split('(\d+)', text) ]
 
+def get_videos(url):
+    html = requests.get(url).text
+    tree = lxml.html.fromstring(html)
+    sel = CSSSelector('td > a')
+    links = [i.get('href') for i in sel(tree)]
+    return filter(lambda x: x[-1] != '/' and x not in ['samplehigh.mp4', 'samplelow.mp4'], links)
+
+
 class API(object):
 
     DATABASE = 'answers.db'
     SECRET = 'microworkers_secret_key'
 
-    def __init__(self, questions, users):
+    def __init__(self, questions, users, watch_count):
         # {username: password}
         self.users = users
         self.table = 'answers'
         # {name: required}
-        self.fields = {q['id']: q.get('required', False) for q in questions}
+        self.fields = {q['id']: q.get('required', False) and q['type'] != 'video' for q in questions}
         self.fields.update({'useragent': False, 'timestamps': True, 'worker': True, 'campaign': True, 'res': True, 'video': True, 'speeds': True})
 
         # Number of times a video should be watched (per campaign)
-        self.videos = defaultdict(lambda: {'movie01.mp4': 2, 'movie02.mp4': 2, 'DoeEvenNormaal26-aug-2014.mp4': 2, 'big_buck_bunny_480p_h264.mp4': 2, 'BigBuckBunny_320x180.mp4': 2})
+        self.videos = defaultdict(lambda: watch_count)
 
         # Campaigns which a worker participated in
         self.workers = defaultdict(list)
@@ -83,8 +94,9 @@ class API(object):
     def video(self, campaign):
         choices = [k for k, v in self.videos[campaign].iteritems() if v > 0]
         if choices:
-            video_url = random.choice(choices)
-            return video_url
+            video = random.choice(choices)
+            self.videos[campaign][video] -= 1
+            return video
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
@@ -132,8 +144,6 @@ class API(object):
                 cur = con.execute(sql, values)
                 con.commit()
 
-            # Mark video
-            self.videos[data['campaign']][data['video']] -= 1
             # Mark worker
             self.workers[data['worker']].append(data['campaign'])
 
@@ -186,6 +196,7 @@ def main(argv):
     try:
         parser.add_argument('-p', '--port', help='Listen port', required=True)
         parser.add_argument('-q', '--questions', help='URL of JSON-formatted questions', required=True)
+        parser.add_argument('-v', '--videos', help='URL of video dir', required=True)
         parser.add_argument('-u', '--users', help='Users that are allowed to get the answers (e.g. user1:pass1,user2:pass2)', required=True)
         parser.add_help = True
         args = parser.parse_args(sys.argv[1:])
@@ -198,9 +209,11 @@ def main(argv):
         cherrypy.response.headers["Access-Control-Allow-Origin"] = "*"
     cherrypy.tools.CORS = cherrypy.Tool('before_handler', CORS)
 
-    questions = json.loads(urllib.urlopen(args.questions).read())
+    questions = json.loads(requests.get(args.questions).text)
     users = dict([user.split(':') for user in args.users.split(',')])
-    api = API(questions, users)
+    watch_count = {v: 25 for v in get_videos(args.videos)}
+
+    api = API(questions, users, watch_count)
 
     config = {'/': {'server.thread_pool': 1,
                     'tools.CORS.on': True,
