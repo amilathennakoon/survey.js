@@ -20,13 +20,15 @@ survey = { questions: undefined,
         
         $.get('http://localhost:7000/video?campaign=' + campaign, function (response) {
                 if (!response) {
-                    $('#nextBtn').addClass('disabled');  
-                    alert('There is no video to view. This likely means we have enough participants for this experiment');
+                    self.showMessage('There is no video to view. This likely means we have enough participants for this experiment.');
                 }
                 self.video = response;
                 $("iframe[id^='video_qos']").attr("src", "video.html?file="+self.video);
             }
-        );
+        ).fail(function() {
+            self.showMessage('Our database server is down. Please try again later.');
+            return;
+        });
       
         $('#backBtn').click(function() {
             if ( !$('#backBtn').hasClass('disabled') ) {
@@ -230,6 +232,13 @@ survey = { questions: undefined,
             $('#nextBtn').removeClass('blue');
         }
     }
+
+    survey.showMessage = function(message) {
+        this.hideAllQuestions();
+        $('#nextBtn').hide();
+        $('.completed-message').html('<b>' + message + '</b>');
+    }
+
 })(survey, jQuery);
 
 
