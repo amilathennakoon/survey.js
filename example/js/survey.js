@@ -11,6 +11,8 @@ survey = { questions: undefined,
         var self = this;
         var worker = this.getParameterByName("worker");
         var campaign = this.getParameterByName("campaign");
+        var rand_key = this.getParameterByName("rand_key");
+
         this.questions = questions;
         
         this.questions.forEach(function(question) {
@@ -67,6 +69,7 @@ survey = { questions: undefined,
                                res: $(window).width() + "x" + $(window).height(),
                                timestamps: self.timestamps.concat([now]),
                                campaign: campaign,
+                               rand_key: rand_key,
                                speeds: [document.getElementById("video_lq_iframe").contentWindow.speed,
                                         document.getElementById("video_hq_iframe").contentWindow.speed,
                                         document.getElementById("video_qos_iframe").contentWindow.speed]};
@@ -228,7 +231,7 @@ survey = { questions: undefined,
             $('#nextBtn').addClass('blue');  
         }
         else if ( $('#nextBtn').text() === 'Finish' ) {
-            $('#nextBtn').text('Continue Â»'); 
+            $('#nextBtn').text('Continue »');
             $('#nextBtn').removeClass('blue');
         }
     }

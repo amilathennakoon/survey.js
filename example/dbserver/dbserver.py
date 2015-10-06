@@ -38,25 +38,38 @@ def get_videos(url):
     links = [i.get('href') for i in sel(tree)]
     return filter(lambda x: x[-1] != '/' and x not in ['samplehigh.mp4', 'samplelow.mp4'], links)
 
+def generate_key(campaign, worker, rand_key, secret):
+    sha = hashlib.sha256()
+    sha.update('%s%s%s%s' % (campaign, worker, rand_key, secret))
+    return 'mw-' + sha.digest().encode('hex')
+
 
 class API(object):
 
     DATABASE = 'answers.db'
-    SECRET = 'microworkers_secret_key'
 
-    def __init__(self, questions, users, watch_count):
+    def __init__(self, questions, users, watch_count, secret):
         # {username: password}
         self.users = users
         self.table = 'answers'
         # {name: required}
         self.fields = {q['id']: q.get('required', False) and q['type'] != 'video' for q in questions}
-        self.fields.update({'useragent': False, 'timestamps': True, 'worker': True, 'campaign': True, 'res': True, 'video': True, 'speeds': True})
+        self.fields.update({'useragent': False,
+                            'timestamps': True,
+                            'worker': True,
+                            'campaign': True,
+                            'rand_key': True,
+                            'res': True,
+                            'video': True,
+                            'speeds': True})
 
         # Number of times a video should be watched (per campaign)
         self.videos = defaultdict(lambda: watch_count)
 
         # Campaigns which a worker participated in
         self.workers = defaultdict(list)
+
+        self.secret = secret
 
         self.setup_database()
 
@@ -148,9 +161,7 @@ class API(object):
             self.workers[data['worker']].append(data['campaign'])
 
             # Generate and return Micoworkers VCODE
-            sha = hashlib.sha256()
-            sha.update(data['worker'] + data['campaign'] + API.SECRET)
-            return {'vcode': 'mw-' + sha.digest().encode('hex')}
+            return {'vcode': generate_key(data['campaign'], data['worker'], data['rand_key'], self.secret)}
 
     @cherrypy.expose
     def export(self):
@@ -197,6 +208,7 @@ def main(argv):
         parser.add_argument('-p', '--port', help='Listen port', required=True)
         parser.add_argument('-q', '--questions', help='URL of JSON-formatted questions', required=True)
         parser.add_argument('-v', '--videos', help='URL of video dir', required=True)
+        parser.add_argument('-m', '--mw', help='Microworkers secret key', required=True)
         parser.add_argument('-u', '--users', help='Users that are allowed to get the answers (e.g. user1:pass1,user2:pass2)', required=True)
         parser.add_help = True
         args = parser.parse_args(sys.argv[1:])
@@ -213,7 +225,7 @@ def main(argv):
     users = dict([user.split(':') for user in args.users.split(',')])
     watch_count = {v: 25 for v in get_videos(args.videos)}
 
-    api = API(questions, users, watch_count)
+    api = API(questions, users, watch_count, args.mw)
 
     config = {'/': {'server.thread_pool': 1,
                     'tools.CORS.on': True,
