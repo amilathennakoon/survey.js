@@ -64,7 +64,7 @@ class API(object):
                             'speeds': True})
 
         # Number of times a video should be watched (per campaign)
-        self.videos = defaultdict(lambda: watch_count)
+        self.videos = defaultdict(lambda: watch_count.copy())
 
         # Campaigns which a worker participated in
         self.workers = defaultdict(list)
@@ -108,7 +108,6 @@ class API(object):
         choices = [k for k, v in self.videos[campaign].iteritems() if v > 0]
         if choices:
             video = random.choice(choices)
-            self.videos[campaign][video] -= 1
             return video
 
     @cherrypy.expose
@@ -157,6 +156,8 @@ class API(object):
                 cur = con.execute(sql, values)
                 con.commit()
 
+            # Mark video
+            self.videos[data['campaign']][data['video']] -= 1
             # Mark worker
             self.workers[data['worker']].append(data['campaign'])
 
