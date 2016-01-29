@@ -75,6 +75,10 @@ br {
   display: block!important;
 }
 
+select {
+  margin: 5px 0;
+}
+
 .wrapper {
   background-color: #fff;
   border: 1px solid #ccc;

@@ -79,6 +79,9 @@ survey = { questions: undefined,
         else if ( question.type === 'single-select-oneline' ) {
             result = $('input[type="radio"][name="' + question.id + '"]:checked').val();
         }
+        else if ( question.type === 'drop-down' ) {
+            result = $('select[name="' + question.id + '"] option:selected').text();
+        }
         else if ( question.type === 'text-field-small' ) {
             result = $('input[name=' + question.id + ']').val();
         }
@@ -116,6 +119,15 @@ survey = { questions: undefined,
                 html += '<td><div><input type="radio" value="' + label + '" name="' + question.id + '"></div></td>';
             });
             html += '<td><div>' + question.labels[1] + '</div></td></tr></table>';
+            questionAnswerElement.append(html);
+        }
+        else if ( question.type === 'drop-down' ) {
+            questionElement.addClass('drop-down');
+            var html = '<select name="' + question.id + '"><option selected="selected"></option>';
+            question.options.forEach(function(option) {
+                html += '<option>' + option + '</option>';
+            });
+            html += '</select>';
             questionAnswerElement.append(html);
         }
         else if ( question.type === 'text-field-small' ) {
